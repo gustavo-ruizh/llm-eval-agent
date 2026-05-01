@@ -1,13 +1,33 @@
 # LLM Evaluation and Experimentation Agent
 
-A production-credible MVP backend that helps enterprise AI teams decide whether an LLM-generated output is reliable enough to ship.
+A production-oriented, agentic AI system that helps teams determine whether LLM outputs are reliable enough to ship — and what experiment to run next.
 
 Given a source document, an LLM-generated output, and an evaluation goal, the system:
+1. Designs an evaluation plan
+2. Scores output quality across key dimensions
+3. Diagnoses failure modes
+4. Recommends concrete, testable experiments
 
-1. Designs an evaluation plan tailored to the task and risk level
-2. Scores the output across relevant quality dimensions
-3. Diagnoses likely failure modes with evidence-grounded root causes
-4. Recommends concrete, testable experiments with measurable success criteria
+---
+
+## 🎯 Why this matters
+
+Most teams struggle to:
+- Evaluate LLM quality consistently
+- Connect evaluation results to product decisions
+- Design structured experiments to improve performance
+
+This system bridges that gap by turning evaluation into actionable decisions.
+
+---
+
+## 🧩 Key Design Decisions
+
+- Hybrid evaluation framework (core + adaptive dimensions)
+- Evidence-based scoring to prevent hallucinated evaluations
+- Separation of observed failures vs hypothesized root causes
+- Experiment recommendations tied to measurable success criteria
+- Deterministic fallback for reliability without API dependency
 
 ---
 
@@ -18,7 +38,7 @@ POST /evaluations
         │
         ▼
 ┌─────────────────────────────────────────────────────┐
-│                  EvaluationOrchestrator              │
+│                  EvaluationOrchestrator             │
 │                                                     │
 │  ┌──────────────┐    ┌──────────────┐               │
 │  │   Planner    │───▶│    Scorer    │               │
@@ -100,6 +120,22 @@ Low-confidence hypotheses produce `requires_more_evidence` experiments with diag
 | 0.41–0.60 | acceptable |
 | 0.61–0.80 | strong |
 | 0.81–1.00 | excellent |
+
+---
+
+## 📊 Example Output (Simplified)
+
+**Production readiness:** Not ready  
+**Primary failure mode:** Hallucination / unsupported claims  
+**Recommended next experiment:** Prompt grounding with explicit citation requirement  
+
+**Key scores:**
+- Faithfulness: 0.37
+- Completeness: 0.52
+- Traceability: 0.41
+
+**Next step:**
+Add prompt instruction requiring source citations and re-evaluate against baseline.
 
 ---
 
@@ -255,3 +291,13 @@ llm_eval_agent/
 - **No long-term memory** — each evaluation is independent
 - **Input length** — no max length enforcement on `source_document` or `llm_output` (future: add request size middleware)
 - **Single process** — no horizontal scaling support in this MVP
+
+---
+
+## 🔧 What I Would Improve With More Time
+
+- Replace deterministic fallbacks with full LLM-driven evaluation
+- Add dataset-based evaluation and batch processing
+- Introduce experiment tracking across runs
+- Integrate with Jira/Linear for real workflow impact
+- Add confidence scoring per diagnosis
