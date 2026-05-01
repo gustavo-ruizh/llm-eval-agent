@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Test / coverage artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Environment
+.env
+*.env
+
+# Database
+evaluation_runs.db
+
+# macOS
+.DS_Store
+__MACOSX/
+
+# Virtual environments
+.venv/
+venv/
+env/

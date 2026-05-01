@@ -1,0 +1,14 @@
+{
+  "source_document": "LEASE AGREEMENT\n\nThis Residential Lease Agreement is entered into as of January 1, 2024, between Landlord: Greenfield Properties LLC ('Landlord') and Tenant: John Smith ('Tenant').\n\n1. PREMISES: Landlord hereby leases to Tenant the property located at 42 Maple Street, Apt 3B, Springfield, IL 62701 ('Premises').\n\n2. TERM: The lease term begins January 1, 2024 and ends December 31, 2024 (12 months).\n\n3. RENT: Monthly rent is $2,500.00, payable on the 1st day of each month. A late fee of $75.00 will be assessed for payments received after the 5th of the month.\n\n4. SECURITY DEPOSIT: Tenant shall deposit $5,000.00 as a security deposit prior to occupancy. The deposit will be returned within 30 days of lease termination, less any deductions for damages beyond normal wear and tear.\n\n5. UTILITIES: Tenant is responsible for electricity, gas, and internet. Landlord covers water, trash, and sewer.\n\n6. NOTICE TO VACATE: Tenant must provide at least 60 days written notice prior to vacating the Premises.\n\n7. PETS: No pets are permitted without prior written consent from Landlord. An additional pet deposit of $500.00 is required per pet.\n\n8. MAINTENANCE: Tenant agrees to maintain the Premises in good condition and promptly notify Landlord of any needed repairs.",
+  "llm_output": "LEASE SUMMARY\n\nThis lease covers apartment 3B at 42 Maple Street, Springfield, IL for a 12-month term from January 1 to December 31, 2024. Monthly rent is $2,500, due on the 1st of each month with a $75 late fee after the 5th. A $5,000 security deposit is required upfront and returned within 30 days of move-out. Tenant pays electricity, gas, and internet; landlord handles water, trash, and sewer. A 60-day written notice is required before vacating. Pets require landlord approval and a $500 pet deposit each.",
+  "user_goal": "Verify the lease summary is accurate, complete, and safe to share with a prospective tenant.",
+  "source_document_type": "residential_lease",
+  "task_type": "summary",
+  "expected_output_format": "prose summary",
+  "business_context": "The summary will be emailed to tenants before they sign. Accuracy is critical to avoid legal disputes.",
+  "risk_level": "high",
+  "baseline_reference": "gpt-4o-summary-v1",
+  "retrieval_metadata_available": false,
+  "prompt_version": "v2.1",
+  "model_version": "gpt-4.1-mini"
+}
