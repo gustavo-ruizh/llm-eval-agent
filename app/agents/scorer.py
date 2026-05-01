@@ -45,8 +45,8 @@ class QualityScoringAgent:
             return self._deterministic_fallback(input_data.evaluation_plan)
 
     def _build_prompt(self, input_data: QualityScoringInput) -> str:
-        source_preview = input_data.source_document[:800]
-        output_preview = input_data.llm_output[:800]
+        source_preview = input_data.source_document[:8000]
+        output_preview = input_data.llm_output[:8000]
         dims_json = [
             {
                 "name": d.name,
