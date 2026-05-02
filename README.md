@@ -21,12 +21,32 @@ This system bridges that gap by turning evaluation into actionable decisions.
 
 ---
 
+## 🔬 Relationship to Existing Frameworks
+
+Frameworks like RAGAS, DeepEval, and G-Eval established the foundation
+for LLM evaluation — particularly faithfulness, answer relevancy, and
+LLM-as-a-judge scoring. This system builds on those concepts with three
+additions they don't natively provide:
+
+- **Business decision framing:** scores are mapped to explicit product
+  outcomes (safe to ship, human review required, further experimentation
+  needed) rather than raw metrics
+- **Observed vs. hypothesized failure separation:** diagnosis explicitly
+  distinguishes what is directly evidenced from what requires further
+  investigation before acting
+- **Experiment recommendation as first-class output:** the system doesn't
+  stop at a score — it produces a prioritized, testable next step tied to
+  measurable success criteria
+
+---
+
 ## 👤 Who This Is For
 
-Primary users:
-- AI Product Managers
-- ML Engineers
-- Data Scientists
+AI Product Managers use this to answer a single question before each release: is this output safe to ship, and if not, what do we change first? 
+
+ML Engineers use it to replace ad-hoc manual review with a structured experiment backlog — each evaluation run produces a prioritized, testable next step.
+
+Data Scientists use it to move beyond one-off scoring notebooks and into a repeatable pipeline that tracks failure modes across prompt iterations.
 
 ## 🔄 Workflow
 
