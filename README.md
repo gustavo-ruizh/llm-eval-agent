@@ -831,3 +831,27 @@ llm_eval_agent/
 - Introduce experiment tracking across runs
 - Integrate with Jira/Linear for real workflow impact
 - Add confidence scoring per diagnosis
+
+---
+
+## 🧠 AI-Assisted Development Approach
+
+This project was built using a structured AI-assisted workflow, combining deliberate system design with LLM-supported implementation.
+
+### Approach
+
+- **Design (ChatGPT)**
+  - Defined architecture, agent responsibilities, and evaluation framework
+  - Designed schema contracts and orchestration logic
+  - Framed the product problem and differentiation from existing approaches (e.g., RAGAS, G-Eval)
+
+- **Implementation (Claude Code)**
+  - Generated Python modules based on a strict implementation prompt
+  - Produced initial Pydantic schemas and agent scaffolding
+
+- **Review & Refinement (ChatGPT)**
+  - Reviewed code for structural consistency and clarity
+  - Identified and corrected issues such as missing dependencies and over-complexity
+  - Ensured the system remained modular, explainable, and aligned with the design
+
+I can explain and justify every design decision in this system end-to-end. I cannot claim to have written every line of Python from scratch.
