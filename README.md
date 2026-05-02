@@ -140,22 +140,6 @@ Low-confidence hypotheses produce `requires_more_evidence` experiments with diag
 
 ---
 
-## 📊 Example Output (Simplified)
-
-**Production readiness:** Not ready  
-**Primary failure mode:** Hallucination / unsupported claims  
-**Recommended next experiment:** Prompt grounding with explicit citation requirement  
-
-**Key scores:**
-- Faithfulness: 0.37
-- Completeness: 0.52
-- Traceability: 0.41
-
-**Next step:**
-Add prompt instruction requiring source citations and re-evaluate against baseline.
-
----
-
 ## Setup
 
 ### 1. Install dependencies
