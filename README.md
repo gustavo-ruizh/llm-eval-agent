@@ -235,23 +235,29 @@ curl "http://localhost:8000/health"
 
 ## 📊 Example Run (Real Output)
 
+> **Note:** The evaluation planner ran in deterministic fallback mode
+> (LLM call failed on first agent); scoring, diagnosis, and experiment
+> recommendation were fully LLM-generated. The pipeline handles partial
+> failures gracefully — downstream agents received the fallback plan
+> and produced context-sensitive output regardless.
+
 Below is an actual response from the system:
 
 ```json
 {
-  "run_id": "eval_a1c13ffd1af1",
-  "timestamp": "2026-05-01T22:11:10.669798+00:00",
-  "execution_time_ms": 95003,
-  "final_summary": "Output is NOT READY for production. Overall score: 0.53. Primary failure mode: hallucination_or_unsupported_claims. Top recommended experiment: exp_001.",
+  "run_id": "eval_7d0d11857f10",
+  "timestamp": "2026-05-03T00:08:03.628781+00:00",
+  "execution_time_ms": 84866,
+  "final_summary": "Output is NOT READY for production. Overall score: 0.29. Primary failure mode: hallucination_or_unsupported_claims. Top recommended experiment: exp_001.",
   "baseline_reference": null,
   "requires_human_review": true,
   "primary_failure_mode": "hallucination_or_unsupported_claims",
   "recommended_next_experiment_id": "exp_001",
   "error": null,
   "full_result": {
-    "run_id": "eval_a1c13ffd1af1",
-    "timestamp": "2026-05-01T22:11:10.669798+00:00",
-    "execution_time_ms": 95003,
+    "run_id": "eval_7d0d11857f10",
+    "timestamp": "2026-05-03T00:08:03.628781+00:00",
+    "execution_time_ms": 84866,
     "evaluation_plan": {
       "evaluation_intent": "risk_assessment",
       "task_type": "summary",
@@ -353,9 +359,9 @@ Below is an actual response from the system:
       ],
       "downstream_contract": {
         "primary_risk_dimensions": [
+          "Traceability",
           "Faithfulness",
-          "Risk / Safety",
-          "Traceability"
+          "Risk / Safety"
         ],
         "requires_human_review_if_below": 0.6,
         "notes": "Generated using deterministic fallback because LLM call failed."
@@ -368,26 +374,29 @@ Below is an actual response from the system:
           "dimension_name": "Faithfulness",
           "dimension_type": "core",
           "risk_weight": "high",
-          "score": 0.55,
-          "score_band": "acceptable",
+          "score": 0.15,
+          "score_band": "poor",
           "justification": {
-            "summary": "Most claims correspond to the source, but numerous claims lack supporting reference or are contradicted by missing source text.",
+            "summary": "The output contains multiple factual inaccuracies and contradicts the source document.",
             "supporting_evidence": [
-              "Term and commencement date details",
-              "Lease charge including late fees",
-              "Lessee's responsibility to pay taxes",
-              "Lessee paying delivery and installation costs"
+              "Mangoceuticals announced the sale of its core patents to Intramont for $2 million in cash, with no stock involved.",
+              "The agreement gives Mangoceuticals a royalty-free license to continue using the patents.",
+              "Intramont receives full control without restrictions.",
+              "Series C Preferred Stock pays a 12% non-cumulative dividend and has full voting rights equal to common stock.",
+              "The preferred shares automatically convert into common stock after one year at a premium conversion rate.",
+              "They rank senior to all other securities in liquidation.",
+              "The company cannot redeem these shares under any circumstances."
             ],
             "unsupported_claims": [
-              "The summary refers to sections (e.g., 8, 9, 11, 12, 13, 15, 16, 17, 18, 24, 25, 26, 27) which do not appear in the provided source excerpt",
-              "Claims about 'net lease' with unconditional payment obligations (section 27)",
-              "Details about Maintenance Agreement, alterations, insurer obligations",
-              "Specific monetary amounts and purchase options"
+              "Sale price is $2 million cash with no stock (source states $20 million payable mainly by stock with $400k cash).",
+              "Mangoceuticals has royalty-free license (source says Intramont has a 10% royalty payment obligation to Mangoceuticals).",
+              "Intramont receives full control without restrictions (source describes a co-exclusive, irrevocable license with restrictions).",
+              "Series C Preferred Stock pays 12% dividend (source says 6% dividend).",
+              "Full voting rights equal to common stock (source does not specify voting rights here).",
+              "Automatic conversion after one year at premium conversion rate (no such detail in source).",
+              "Ranking senior to all other securities in liquidation and no redemption rights (source mentions rights and preferences are detailed elsewhere but no such claims made here)."
             ],
-            "missing_items": [
-              "Full source text for many enumerated sections referenced in the output",
-              "Specific terms such as security deposits, expansion options, treasury note adjustments, and right of first refusal clauses"
-            ]
+            "missing_items": []
           },
           "confidence": "high"
         },
@@ -395,19 +404,22 @@ Below is an actual response from the system:
           "dimension_name": "Completeness",
           "dimension_type": "core",
           "risk_weight": "medium",
-          "score": 0.25,
+          "score": 0.3,
           "score_band": "weak",
           "justification": {
-            "summary": "The summary misses multiple critical details and appears to include information beyond the shared source excerpt.",
+            "summary": "The output omits many critical terms of the IP Purchase Agreement and misrepresents key financial and license aspects.",
             "supporting_evidence": [
-              "Coverage of term, commencement, charges, payment, delivery, installation, and tax obligations"
+              "Output mentions Series C Preferred Stock creation.",
+              "Output mentions some terms of stock and licenses."
             ],
             "unsupported_claims": [],
             "missing_items": [
-              "Most of the sections cited in the output are absent in the provided source (sections 8, 9, 11, 12, 13, 15, 16, 17, etc.)",
-              "No mention or source evidence for amounts like $176,073.80 monthly charge or $352,147.60 security deposit in the excerpt",
-              "No source coverage for right of first refusal, purchase options, or legal enforcement terms",
-              "No mention of the mobile robot nature of equipment beyond a brief fragment"
+              "Total consideration amount and structure ($20 million total with 980,000 shares of Series C Preferred Stock and $400,000 cash payments with detailed schedule).",
+              "Details on cash payment schedule and cure/extension options.",
+              "Grant back license terms including 10% royalty payments to Mangoceuticals starting April 24, 2025.",
+              "Right of first refusal granted to Intramont for sale of patents until April 24, 2027.",
+              "Description of wholly owned subsidiary MangoRx IP Holdings, LLC as purchaser.",
+              "The fact that the issuance of Series C Shares was exempt from registration and related transfer restrictions."
             ]
           },
           "confidence": "high"
@@ -416,35 +428,42 @@ Below is an actual response from the system:
           "dimension_name": "Traceability",
           "dimension_type": "core",
           "risk_weight": "high",
-          "score": 0.1,
+          "score": 0.2,
           "score_band": "poor",
           "justification": {
-            "summary": "Most claims are not clearly traceable to the provided source as many cited sections are missing and the output includes details not found in the text.",
+            "summary": "Many claims in the output cannot be traced or are contradicted by the source document.",
             "supporting_evidence": [
-              "Sections 1 (term), 2 (commencement), 3 (lease charge), 4 (taxes), 5 (delivery), and 6 (installation) are referenced and partially supported in the source"
+              "Statements about the sale price and payment method are contradicted by source text in Item 1.01.",
+              "Royalty and license conditions described in the source differ from output assertions.",
+              "Dividend rate and rights of Series C Preferred Stock in output differ from those noted in source."
             ],
             "unsupported_claims": [
-              "Claims from sections 8, 9, 11, 12, 13, 15, 16, 17, 18, 24, 25, 26, 27",
-              "Financial details for lease schedules and rider provisions not found in source",
-              "Legal terms about default, remedies, insurance, indemnity, and purchase options"
+              "The $2 million cash consideration with no stock.",
+              "Royalty-free license granted to Mangoceuticals.",
+              "Full voting rights equal to common stock with 12% dividend.",
+              "Automatic conversion and senior liquidation preference features."
             ],
-            "missing_items": []
+            "missing_items": [
+              "Reference to the exact source paragraphs or exhibit citations is missing from the output."
+            ]
           },
           "confidence": "high"
         },
         {
           "dimension_name": "Relevance",
           "dimension_type": "core",
-          "risk_weight": "medium",
-          "score": 0.85,
-          "score_band": "excellent",
+          "risk_weight": "low",
+          "score": 0.65,
+          "score_band": "strong",
           "justification": {
-            "summary": "The output remains focused on summarizing the lease agreement’s key financial and legal terms relevant to the user’s goal.",
+            "summary": "The output generally addresses the user goal of summarizing the Form 8-K but includes inaccurate content.",
             "supporting_evidence": [
-              "Focused on core lease terms and obligations",
-              "Relevant breakdown of sections by category (Core Terms, Operations, Risk, Default, Schedules)"
+              "The output focuses on the patent sale and Series C Preferred Stock terms.",
+              "Mentions licensing aspects and payment terms."
             ],
-            "unsupported_claims": [],
+            "unsupported_claims": [
+              "Inaccurate financial and licensing details detract from relevance but overall on-topic."
+            ],
             "missing_items": []
           },
           "confidence": "high"
@@ -453,21 +472,26 @@ Below is an actual response from the system:
           "dimension_name": "Risk / Safety",
           "dimension_type": "core",
           "risk_weight": "high",
-          "score": 0.5,
-          "score_band": "acceptable",
+          "score": 0.1,
+          "score_band": "poor",
           "justification": {
-            "summary": "The output highlights risk and liability aspects but includes many claims that cannot be verified from the provided excerpt, risking incomplete risk portrayal.",
+            "summary": "The output is misleading about financial terms, ownership rights, and royalties, potentially causing harmful misunderstandings.",
             "supporting_evidence": [
-              "Identification of late charges and taxes as financial risks",
-              "Mention of Lessee’s responsibility for loss, insurance, indemnity, and default consequences"
+              "Misstates purchase price and payment method.",
+              "Incorrect royalty licensing details.",
+              "Wrong dividend rate and stock rights.",
+              "Claims about control and redemption rights that are unsupported."
             ],
             "unsupported_claims": [
-              "Many insurance, indemnity, casualty loss, default event and remedy terms not found in partial source text",
-              "No mention in source of a 40% purchase option or 5% penalty fees"
+              "Sale price and payment type.",
+              "License terms as royalty-free to Mangoceuticals.",
+              "Preferred stock dividend, conversion, and voting rights.",
+              "Claim that company cannot redeem shares."
             ],
             "missing_items": [
-              "Full legal risk terms from omitted sections",
-              "Clear depiction of all penalties and remedy rights"
+              "Disclosure of obligations to make royalty payments to Mangoceuticals.",
+              "Details about cure periods for missed cash payments.",
+              "Restrictions on stock transfer and registration exemptions."
             ]
           },
           "confidence": "high"
@@ -476,20 +500,20 @@ Below is an actual response from the system:
           "dimension_name": "Business Usefulness",
           "dimension_type": "core",
           "risk_weight": "medium",
-          "score": 0.65,
-          "score_band": "strong",
+          "score": 0.25,
+          "score_band": "weak",
           "justification": {
-            "summary": "Provides useful financial and legal obligations summary valuable for business decision-making, but lacks verifiable completeness.",
+            "summary": "Due to multiple inaccuracies and omissions, the output is of limited utility for making informed business decisions.",
             "supporting_evidence": [
-              "Clear breakdown of payment terms and obligations",
-              "Identification of key lease termination and renewal mechanisms"
+              "Incorrect financial summary impairs valuation assessment.",
+              "Misstated license terms affect understanding of IP control and revenue.",
+              "Inaccurate stock terms diminish ability to assess equity impact."
             ],
-            "unsupported_claims": [
-              "Quantitative values and expansion options lack source backing"
-            ],
+            "unsupported_claims": [],
             "missing_items": [
-              "Confirmation and sourcing of monetary figures",
-              "Clear legal remedies or risks that might affect business decisions"
+              "Clear and accurate breakdown of payment terms and stock issuance.",
+              "Royalty obligations and rights of first refusal important for risk assessment.",
+              "Full rights and preferences of Series C stock as outlined in source."
             ]
           },
           "confidence": "high"
@@ -498,23 +522,26 @@ Below is an actual response from the system:
           "dimension_name": "Information Prioritization",
           "dimension_type": "case_specific",
           "risk_weight": "low",
-          "score": 0.8,
-          "score_band": "strong",
+          "score": 0.4,
+          "score_band": "weak",
           "justification": {
-            "summary": "The summary leads with core lease terms and financial obligations before operational and risk details, reflecting appropriate prioritization.",
+            "summary": "The output prioritizes some stock details before correctly summarizing the core patent purchase agreement, but critical errors reduce its effectiveness.",
             "supporting_evidence": [
-              "Starts with Term, Commencement, Lease Charge and Taxes",
-              "Covers operational costs before risk and default",
-              "Monetary schedules and rider options placed last"
+              "First paragraph addresses the patent sale (although inaccurately).",
+              "Second paragraph describes preferred stock terms."
             ],
             "unsupported_claims": [],
-            "missing_items": []
+            "missing_items": [
+              "Correct prioritization of accurate financial terms first.",
+              "Clear explanation of licensing and royalty obligations.",
+              "Mention of subsidiary purchaser and right of first refusal."
+            ]
           },
           "confidence": "high"
         }
       ],
-      "overall_score": 0.529,
-      "scoring_notes": "Output contains significant extraneous information beyond the provided source excerpt and omits coverage of some core contents. Many detailed claims lack clear source traceability, necessitating human review.",
+      "overall_score": 0.293,
+      "scoring_notes": "The output contains numerous factual errors and omissions that undermine faithfulness, traceability and risk safety, requiring human review before use.",
       "requires_human_review": true
     },
     "failure_diagnosis_output": {
@@ -523,70 +550,79 @@ Below is an actual response from the system:
           "diagnosis_type": "observed_failure",
           "failure_category": "hallucination_or_unsupported_claims",
           "severity": "critical",
-          "root_cause_summary": "Summary contains numerous claims and details not supported by the provided source text, including references to missing sections and specific monetary and legal information.",
+          "root_cause_summary": "The output contains multiple unsupported and factually incorrect claims about financial terms, license conditions, and stock rights that contradict the source document.",
           "supporting_evidence": [
-            "Unsupported claims include references to sections (8, 9, 11, 12, 13, 15, 16, 17, 18, 24, 25, 26, 27) absent from source",
-            "Claims about 'net lease' obligations, Maintenance Agreement details, insurer obligations, and purchase options unsupported",
-            "Monetary amounts and specific contract clauses lack backing in source"
+            "Sale price is $2 million cash with no stock (source states $20 million payable mainly by stock with $400k cash).",
+            "Mangoceuticals has royalty-free license (source says Intramont has a 10% royalty payment obligation to Mangoceuticals).",
+            "Intramont receives full control without restrictions (source describes a co-exclusive, irrevocable license with restrictions).",
+            "Series C Preferred Stock pays 12% dividend (source says 6% dividend).",
+            "Full voting rights equal to common stock (source does not specify voting rights here).",
+            "Automatic conversion after one year at premium conversion rate (no such detail in source).",
+            "Ranking senior to all other securities in liquidation and no redemption rights (source mentions rights and preferences are detailed elsewhere but no such claims made here)."
           ],
           "confidence": "high",
-          "evidence_needed": "Access to full original source text including all referenced sections to verify source support for claims",
+          "evidence_needed": "Access to the original source document or Form 8-K disclosures to validate all financial and license related claims.",
           "recommended_experiment_signals": [
-            "Reduced hallucinated claims after prompt tuning or model updates",
-            "Improved alignment of claims with provided text in evaluation outputs"
+            "Reduced hallucinated financial figures or licensing terms in the output.",
+            "Improved alignment of summarized terms with source document content."
           ]
         },
         {
           "diagnosis_type": "observed_failure",
           "failure_category": "missing_information",
           "severity": "high",
-          "root_cause_summary": "The summary omits critical factual details and clauses present in the full source but absent or only partially present in the provided excerpt.",
+          "root_cause_summary": "Critical terms and details from the IP Purchase Agreement are omitted, including payment schedules, license royalties, rights of first refusal, subsidiary purchaser details, and registration exemption disclosures.",
           "supporting_evidence": [
-            "Missing items include full text for enumerated sections referenced",
-            "Specific contractual terms about security deposits, expansion options, and legal enforcement not addressed"
+            "Total consideration amount and structure ($20 million total with 980,000 shares of Series C Preferred Stock and $400,000 cash payments with detailed schedule).",
+            "Details on cash payment schedule and cure/extension options.",
+            "Grant back license terms including 10% royalty payments to Mangoceuticals starting April 24, 2025.",
+            "Right of first refusal granted to Intramont for sale of patents until April 24, 2027.",
+            "Description of wholly owned subsidiary MangoRx IP Holdings, LLC as purchaser.",
+            "The fact that the issuance of Series C Shares was exempt from registration and related transfer restrictions."
           ],
           "confidence": "high",
-          "evidence_needed": "Complete and comprehensive source text to identify all critical missing information",
+          "evidence_needed": "Complete source contract or summary document listing these provisions.",
           "recommended_experiment_signals": [
-            "Increased completeness metrics when full source text is provided",
-            "Reduction in missing critical information with improved extraction methods"
+            "Increase in inclusion of detailed payment and license terms.",
+            "Improved inclusion of purchaser entity and transfer restriction details."
           ]
         },
         {
           "diagnosis_type": "observed_failure",
           "failure_category": "incomplete_extraction",
           "severity": "high",
-          "root_cause_summary": "The summary inadequately extracts and references source information leading to incomplete coverage and traceability.",
+          "root_cause_summary": "Important financial and licensing information was incompletely extracted or omitted from the summary, limiting completeness and utility.",
           "supporting_evidence": [
-            "Score indicates poor traceability with many claims not clearly linked to source",
-            "Missing mention of key financial and risk terms reduces extraction completeness"
+            "Missing payment terms and stock issuance details critical for understanding the deal structure.",
+            "Omission of royalty obligations and right of first refusal reduces completeness.",
+            "Absence of Series C stock rights and preferences as outlined in source."
           ],
           "confidence": "high",
-          "evidence_needed": "Detailed source-to-output mapping or retrieval information to ensure accurate extraction",
+          "evidence_needed": "Verification with original documents to identify all expected extraction fields.",
           "recommended_experiment_signals": [
-            "Improved traceability scores with enhanced retrieval or extraction controls",
-            "Better completeness when section references correspond precisely to source text"
+            "Expanded coverage of extracted fields matching the source.",
+            "Reduction in omitted key contractual provisions."
           ]
         },
         {
           "diagnosis_type": "hypothesized_root_cause",
           "failure_category": "retrieval_issues",
           "severity": "medium",
-          "root_cause_summary": "Lack of retrieval metadata combined with poor traceability suggests possible incomplete or inadequate source retrieval affecting summary quality.",
+          "root_cause_summary": "Low traceability combined with lack of retrieval metadata suggests the model may have generated unsupported information in absence of appropriate source references.",
           "supporting_evidence": [
-            "Retrieval metadata not available",
-            "Traceability scored as poor with indications of missing referenced sections"
+            "Traceability scored 0.2 with multiple claims untraceable or contradicted by source.",
+            "No retrieval metadata available making source referencing impossible."
           ],
           "confidence": "low",
-          "evidence_needed": "Access to retrieval logs or metadata to confirm completeness and relevance of retrieved source text",
+          "evidence_needed": "Access to model retrieval logs or source citations for output claims.",
           "recommended_experiment_signals": [
-            "Improved traceability and faithfulness when retrieval metadata is included",
-            "Correlation between retrieval completeness and summary accuracy"
+            "Improved source referencing and claim traceability with retrieval metadata.",
+            "Reduction in hallucinations linked to retrieval capability improvements."
           ]
         }
       ],
       "primary_failure_mode": "hallucination_or_unsupported_claims",
-      "diagnosis_notes": "Summary suffers mainly from hallucinated content not supported by the partial source. This is compounded by missing information and incomplete extraction likely due to insufficient or partial retrieval of source text. Improving source completeness and retrieval transparency could mitigate these issues."
+      "diagnosis_notes": "The most critical issue is the presence of multiple unsupported claims that contradict the source, severely undermining the summary's faithfulness and business usefulness. Missing critical contract details further compound this failure, affecting completeness and safety. Improving retrieval traceability and robust extraction processes could mitigate hallucinations and missing information."
     },
     "experiment_recommendation_output": {
       "experiments": [
@@ -594,7 +630,7 @@ Below is an actual response from the system:
           "experiment_id": "exp_001",
           "linked_failure_category": "hallucination_or_unsupported_claims",
           "linked_diagnosis_type": "observed_failure",
-          "validates_failure_mode": "hallucination and unsupported claims in summaries",
+          "validates_failure_mode": "generation of unsupported and factually incorrect claims",
           "experiment_type": "prompt_change",
           "scope": "prompt_only",
           "priority": "critical",
@@ -603,33 +639,33 @@ Below is an actual response from the system:
           "depends_on_experiment_id": null,
           "baseline_reference": null,
           "diagnostic_goal": null,
-          "recommendation": "Tune prompts to explicitly instruct the model to cite only facts directly supported by the source text and to avoid fabricating claims.",
-          "test_design": "Create a controlled set of prompt variants with increasing emphasis on source support and hallucination avoidance. Evaluate the hallucination rate on a fixed source-summary dataset.",
-          "expected_outcome": "Reduced hallucinated claims and improved alignment of claims with provided source text.",
+          "recommendation": "Redesign prompt to explicitly instruct the model to only produce information directly supported by the source document and request citations for all claims.",
+          "test_design": "Develop a controlled prompt variant emphasizing strict adherence to source content and requiring explicit referencing of claims. Compare output against the original prompt outputs for hallucination reduction.",
+          "expected_outcome": "Significant reduction in unsupported and factually incorrect financial and license claims, verified by increased alignment with source document contents.",
           "success_criteria": [
             {
-              "metric_name": "hallucination_rate",
-              "baseline_value": 0.47,
-              "target_value": 0.2,
+              "metric_name": "Rate of hallucinated claims in output",
+              "baseline_value": 0.35,
+              "target_value": 0.05,
               "comparison_type": "absolute",
-              "measurement_method": "Automated hallucination detection against source text"
+              "measurement_method": "Manual annotation or automated hallucination detection comparing outputs against source text"
             },
             {
-              "metric_name": "claim_alignment_score",
-              "baseline_value": 0.53,
-              "target_value": 0.75,
+              "metric_name": "Alignment of summarized terms with source document",
+              "baseline_value": 0.55,
+              "target_value": 0.9,
               "comparison_type": "absolute",
-              "measurement_method": "Human evaluation for claim support in summary"
+              "measurement_method": "Content overlap scoring or expert review"
             }
           ],
-          "risk_if_not_done": "Continued production of summaries with critical unsupported or fabricated claims, risking misinformation."
+          "risk_if_not_done": "Continued dissemination of inaccurate or misleading financial and licensing information that could impact business decisions."
         },
         {
           "experiment_id": "exp_002",
           "linked_failure_category": "missing_information",
           "linked_diagnosis_type": "observed_failure",
-          "validates_failure_mode": "missing critical factual details in summaries",
-          "experiment_type": "evaluation_set_expansion",
+          "validates_failure_mode": "omission of critical payment schedules, royalties, and transfer restriction details",
+          "experiment_type": "source_chunking_review",
           "scope": "hybrid",
           "priority": "high",
           "effort": "medium",
@@ -637,94 +673,87 @@ Below is an actual response from the system:
           "depends_on_experiment_id": "exp_001",
           "baseline_reference": null,
           "diagnostic_goal": null,
-          "recommendation": "Expand evaluation datasets to include complete source texts and compare summary completeness against these full sources.",
-          "test_design": "Add full original source texts including all clauses and sections to the evaluation benchmark. Measure completeness of generated summaries before and after.",
-          "expected_outcome": "Increased completeness metrics and identification of missing information due to source excerpt limitations.",
+          "recommendation": "Review and optimize source chunking strategy to ensure all critical contractual provisions are included in the model input context.",
+          "test_design": "Modify chunking parameters to preserve continuity of critical clauses and compare the presence of payment, license, and entity details in generated summaries.",
+          "expected_outcome": "Greater inclusion of payment schedule, license royalties, rights of first refusal, subsidiary purchaser details, and registration exemption disclosures in outputs.",
           "success_criteria": [
             {
-              "metric_name": "summary_completeness",
-              "baseline_value": 0.6,
+              "metric_name": "Coverage rate of critical contractual provisions",
+              "baseline_value": 0.5,
               "target_value": 0.85,
               "comparison_type": "absolute",
-              "measurement_method": "Automated completeness metric comparing summary facts to full source text"
+              "measurement_method": "Manual or automated checklist verification against source documents"
             }
           ],
-          "risk_if_not_done": "Persisting omission of critical factual details leading to incomplete and less trustworthy summaries."
+          "risk_if_not_done": "Persistent omission of vital contract details reduces the usefulness and trustworthiness of the summary for business audiences."
         },
         {
           "experiment_id": "exp_003",
           "linked_failure_category": "incomplete_extraction",
           "linked_diagnosis_type": "observed_failure",
-          "validates_failure_mode": "inadequate extraction causing incomplete coverage and poor traceability",
-          "experiment_type": "source_chunking_review",
-          "scope": "retrieval_only",
+          "validates_failure_mode": "incomplete or omitted financial and licensing information extraction",
+          "experiment_type": "output_schema_change",
+          "scope": "schema_only",
           "priority": "high",
-          "effort": "medium",
+          "effort": "low",
           "status": "recommended",
           "depends_on_experiment_id": "exp_002",
           "baseline_reference": null,
           "diagnostic_goal": null,
-          "recommendation": "Review and improve the source chunking and referencing strategy to ensure thorough extraction and accurate section mapping.",
-          "test_design": "Implement refined chunking of source text ensuring granular and complete coverage. Evaluate traceability and completeness scores with improved chunk references.",
-          "expected_outcome": "Higher traceability and completeness scores with better alignment of summary content to source sections.",
+          "recommendation": "Introduce a structured output schema requiring explicit extraction fields for all expected financial and licensing information.",
+          "test_design": "Implement and enforce a standardized output schema during inference that forces model outputs to explicitly include all key financial and licensing provisions.",
+          "expected_outcome": "Improved completeness and structured extraction of all relevant contractual details with less omission.",
           "success_criteria": [
             {
-              "metric_name": "traceability_score",
-              "baseline_value": 0.55,
-              "target_value": 0.8,
-              "comparison_type": "absolute",
-              "measurement_method": "Human rated and automatic linkage scores between summary claims and source text chunks"
-            },
-            {
-              "metric_name": "completeness_score",
+              "metric_name": "Completeness score of extracted financial and licensing fields",
               "baseline_value": 0.6,
-              "target_value": 0.85,
+              "target_value": 0.9,
               "comparison_type": "absolute",
-              "measurement_method": "Coverage metrics of source facts included in summary"
+              "measurement_method": "Automated schema validation and manual spot checks"
             }
           ],
-          "risk_if_not_done": "Continued poor extraction and referencing will limit the ability to verify summary accuracy and completeness."
+          "risk_if_not_done": "Summaries remain incomplete and lack critical details necessary for accurate interpretation by business users."
         },
         {
           "experiment_id": "exp_004",
           "linked_failure_category": "retrieval_issues",
           "linked_diagnosis_type": "hypothesized_root_cause",
-          "validates_failure_mode": "potential incomplete or inadequate source retrieval affecting summary quality",
+          "validates_failure_mode": "lack of retrieval metadata leading to unsupported generation",
           "experiment_type": "retrieval_tuning",
           "scope": "retrieval_only",
           "priority": "medium",
           "effort": "medium",
           "status": "requires_more_evidence",
-          "depends_on_experiment_id": "exp_003",
+          "depends_on_experiment_id": null,
           "baseline_reference": null,
-          "diagnostic_goal": "Confirm whether retrieval metadata and completeness improve summary faithfulness and traceability.",
-          "recommendation": "Incorporate detailed retrieval metadata and logs to evaluate and improve completeness and relevance of retrieved source texts.",
-          "test_design": "Enable retrieval logging with metadata on source chunks. Correlate retrieval completeness metrics with summary quality and traceability.",
-          "expected_outcome": "Identify causal link between retrieval completeness and summary accuracy, enabling targeted improvements.",
+          "diagnostic_goal": "Determine if improving retrieval metadata and traceability reduces hallucinations and improves source referencing in summaries.",
+          "recommendation": "Enhance retrieval system to include source citations and metadata linkage to each fragment of information provided to the model.",
+          "test_design": "Tune retrieval parameters to add explicit metadata and traceability to retrieved document chunks; evaluate impact on hallucination and referencing quality.",
+          "expected_outcome": "Better traceability of claims to source documents, reduced hallucination rate linked to retrieval quality improvements, and clearer source attributions.",
           "success_criteria": [
             {
-              "metric_name": "retrieval_completeness",
-              "baseline_value": null,
-              "target_value": 0.9,
+              "metric_name": "Frequency of source citations in output",
+              "baseline_value": 0.1,
+              "target_value": 0.7,
               "comparison_type": "absolute",
-              "measurement_method": "Proportion of relevant source text retrieved compared to full source"
+              "measurement_method": "Automated detection of in-text citation presence"
             },
             {
-              "metric_name": "summary_traceability",
-              "baseline_value": 0.55,
-              "target_value": 0.8,
+              "metric_name": "Hallucination rate linked to retrieval issues",
+              "baseline_value": 0.3,
+              "target_value": 0.1,
               "comparison_type": "absolute",
-              "measurement_method": "Traceability scoring post retrieval tuning"
+              "measurement_method": "Manual or automated hallucination analysis"
             }
           ],
-          "risk_if_not_done": "Possible unresolved retrieval gaps leading to persistent summary inaccuracies and poor faithfulness."
+          "risk_if_not_done": "Retrieval deficiencies remain unaddressed, potentially perpetuating unsupported generation and undermining trustworthiness."
         }
       ],
       "top_priority_experiment_id": "exp_001",
-      "recommendation_notes": "Begin experimentation by addressing hallucination and unsupported claims through prompt design changes, as this has the highest severity and confidence. Follow sequentially with evaluation expansion and source chunking improvements before targeting hypothesized retrieval issues requiring more evidence."
+      "recommendation_notes": "Start with prompt redesign to reduce hallucinations, then improve source chunking and structured schema extraction to enhance completeness, followed by retrieval tuning after sufficient evidence is gathered."
     },
     "baseline_reference": null,
-    "final_summary": "Output is NOT READY for production. Overall score: 0.53. Primary failure mode: hallucination_or_unsupported_claims. Top recommended experiment: exp_001.",
+    "final_summary": "Output is NOT READY for production. Overall score: 0.29. Primary failure mode: hallucination_or_unsupported_claims. Top recommended experiment: exp_001.",
     "execution_trace": [
       "planner:start",
       "planner:success",
